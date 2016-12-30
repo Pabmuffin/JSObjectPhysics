@@ -2,11 +2,11 @@ physics = {
 	
 	vars:{
 		interval:"",
-		hBoundary:750,
-		vBoundary:750,
+		boundary:550,
 		terminalVelocity:40,
 		acceleration:1,
 		rollingResistanceFactor:0.99,
+		bounceFactor:0.70,
 		balls: [],
 	},
 	
@@ -18,6 +18,15 @@ physics = {
 		clearInterval(physics.vars.interval);
 	},
 	
+	reset:function(){
+		physics.stop();
+		physics.vars.balls = [];
+		physics.addBall({h:{pos:260, speed:30, acc:0}, v:{pos:260, speed:100, acc:1}, elem:document.getElementById("blueb")});
+		physics.addBall({h:{pos:290, speed:100, acc:1}, v:{pos:290, speed:0, acc:0}, elem:document.getElementById("greenb")});
+		physics.addBall({h:{pos:260, speed:0, acc:0}, v:{pos:290, speed:-100, acc:-1}, elem:document.getElementById("redb")});
+		physics.addBall({h:{pos:290, speed:-100, acc:-1}, v:{pos:260, speed:10, acc:0}, elem:document.getElementById("orangeb")});
+	},
+	
 	moveObjects:function(objects){
 		for(i = 0; i<objects.length; i++){
 			physics.advanceObject(objects[i]);
@@ -26,81 +35,63 @@ physics = {
 
 	addBall:function(ball){
 		physics.vars.balls.push(ball);
+		physics.placeBall(ball);
 	},
 	
-	advanceObject:function(ball) {
-
-		if (ball.hPos + ball.hSpeed >= physics.vars.hBoundary) //If we have hit the right wall
+	placeBall:function(ball){
+		ball.elem.style.top = ball.v.pos + 'px'; 
+		ball.elem.style.left = ball.h.pos + 'px';
+	},
+	
+	advanceObject:function(ball){
+		physics.calculateAxis(ball.v, ball.h);
+		physics.calculateAxis(ball.h, ball.v);
+		physics.placeBall(ball); 
+	},
+	
+	calculateAxis:function(axis, axis2){
+				
+		var nextPos = axis.pos + axis.speed;
+		
+		if (nextPos >= physics.vars.boundary) //If we have hit the right wall
 		{
-			ball.hPos = physics.vars.hBoundary;
-			if( Math.abs(ball.hSpeed) < 1 ) //If the ball is coming to a stop on the right wall
+			axis.pos = physics.vars.boundary;
+			if( Math.abs(axis.speed) < 1 ) //If the ball is coming to a stop on the right wall
 			{
-				ball.hSpeed = 0;
+				axis.speed = 0;
 			}
 			else
 			{
-				ball.hSpeed = -1 * ball.hSpeed * 0.70;
+				axis.speed = -1 * axis.speed * physics.vars.bounceFactor;
 			}
 
 			//Rolling resistance: Friction when the ball hits the right wall
-			ball.vSpeed = ball.vSpeed * physics.vars.rollingResistanceFactor;
+			axis2.speed = axis2.speed * physics.vars.rollingResistanceFactor;
 		}
-		else if (ball.hPos + ball.hSpeed <= 0) //If we have hit the left wall
+		else if (nextPos <= 0) //If we have hit the left wall
 		{
-			ball.hPos = 0;
-			if( Math.abs(ball.hSpeed) < 1 ) //If the ball is coming to a stop on the left wall
+			axis.pos = 0;
+			if( Math.abs(axis.speed) < 1 ) //If the ball is coming to a stop on the left wall
 			{
-				ball.hSpeed = 0;
+				axis.speed = 0;
 			}
 			else
 			{
-				ball.hSpeed = -1 * ball.hSpeed * 0.70;
+				axis.speed = -1 * axis.speed * physics.vars.bounceFactor;
 			}
 
 			//Rolling resistance: Friction when the ball hits the left wall
-			ball.vSpeed = ball.vSpeed * physics.vars.rollingResistanceFactor;
+			axis2.speed = axis2.speed * physics.vars.rollingResistanceFactor;
 		}
 		else
 		{
-			ball.hPos = ball.hPos + ball.hSpeed;
-		}
-		
-		if (ball.vPos + ball.vSpeed >= physics.vars.vBoundary) //if we have hit the bottom wall.
-		{
-			ball.vPos = physics.vars.vBoundary;
-			if( Math.abs(ball.vSpeed) < 1 ) //if the ball is coming to a stop at the bottom
+			if (axis.speed < physics.vars.terminalVelocity)
 			{
-				ball.vSpeed = 0;
+				axis.speed += axis.acc;
 			}
-			else
-			{
-				ball.vSpeed = -1 * ball.vSpeed * 0.70;
-			}
-
-			//Rolling resistance: Friction when the ball hits the bottom wall.
-			ball.hSpeed = ball.hSpeed * physics.vars.rollingResistanceFactor;
+			axis.pos = axis.pos + axis.speed;
 		}
-		else if (ball.vPos + ball.vSpeed <= 0) //if we have hit the top wall.
-		{
-			ball.vPos = 0;
-			ball.vSpeed = -1 * ball.vSpeed;
-
-			//Rolling resistance: Friction when the ball hits the top wall.
-			ball.hSpeed = ball.hSpeed * physics.vars.rollingResistanceFactor;
-		}
-		else{
-			if (ball.vSpeed < physics.vars.terminalVelocity)
-			{
-				ball.vSpeed += physics.vars.acceleration;
-			}
-			ball.vPos = ball.vPos + ball.vSpeed;
-		}
-
-		ball.elem.style.top = ball.vPos + 'px'; 
-		ball.elem.style.left = ball.hPos + 'px'; 
 	},
 }
 
-physics.addBall({hPos: 0, vPos: 1, hSpeed:30, vSpeed:1, elem:document.getElementById("ball1")});
-physics.addBall({hPos: 150, vPos: 1, hSpeed:0, vSpeed:5, elem:document.getElementById("ball2")});
-physics.addBall({hPos: 350, vPos: 1, hSpeed:10, vSpeed:10, elem:document.getElementById("ball3")});
+physics.reset();

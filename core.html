@@ -4,30 +4,40 @@
 
 <style>
 #container {
-    width: 800px;
-    height: 800px;
+    width: 600px;
+    height: 600px;
     position: relative;
-    background: yellow;
+    background: white;
+	border-color: black;
+	border-width: 6px;
+	border-style: solid;
 }
-#ball1 {
+#blueb {
     width: 50px;
     height: 50px;
     position: absolute;
     background: blue;
     border-radius: 50%;
 }
-#ball2 {
+#redb {
     width: 50px;
     height: 50px;
     position: absolute;
     background: red;
     border-radius: 50%;
 }
-#ball3 {
+#greenb {
     width: 50px;
     height: 50px;
     position: absolute;
     background: green;
+    border-radius: 50%;
+}
+#orangeb {
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    background: orange;
     border-radius: 50%;
 }
 </style>
@@ -36,18 +46,19 @@
 <p>
 <button onclick="physics.start()">Start</button>
 <button onclick="physics.stop()">Stop</button>
+<button onclick="physics.reset()">Reset</button>
 </p>
  
 
 <div id ="container">
-    <div id ="ball1"></div>
-    <div id ="ball2"></div>
-    <div id ="ball3"></div>
+    <div id ="blueb"></div>
+    <div id ="redb"></div>
+    <div id ="greenb"></div>
+    <div id ="orangeb"></div>
 </div>
 
-<script src="ObjectPhysics.js">
+<script src="ObjectPhysics.js"></script>
 
-</script>
 
 </body>
 </html>
