@@ -1,60 +1,75 @@
 function myMove()
 {
-  var elem = document.getElementById("animate");   
-  var hPos = 0;
-  var vPos = 1;
-  var id = setInterval(advanceObject, 10);
-  var movingRight = true;
-  var movingDown = true;
-  var hSpeed = 20;
-  var vSpeed = 0;
+  var ball1 = {hPos: 0, vPos: 1, hSpeed:10, vSpeed:0, elem:document.getElementById("ball1")};
+  var id = setInterval(advanceObject, 10, ball1);
   var hBoundary = 950;
   var vBoundary = 850;
   var terminalVelocity = 40;
   var acceleration = 1;
   
-  function advanceObject() {
-	  if (hPos + hSpeed >= hBoundary)
+  function advanceObject(ball) {
+	  console.log("hello");
+	  
+	  if (ball.hPos + ball.hSpeed >= hBoundary) //If we have hit the right wall
 	  {
-		  hPos = hBoundary;
-		  hSpeed = -1 * hSpeed * 0.70;
-	  }
-	  else if (hPos + hSpeed <= 0)
-	  {
-		  hPos = 0;
-		  hSpeed = -1 * hSpeed;
-	  }
-	  else{
-		  hPos = hPos + hSpeed;
-	  }
-	  if (vPos + vSpeed >= vBoundary)
-	  {
-		  vPos = vBoundary;
-		  vSpeed = -1 * vSpeed * 0.70;
-	  }
-	  else if (vPos + vSpeed <= 0)
-	  {
-		  vPos = 0;
-		  vSpeed = -1 * vSpeed;
-	  }
-	  else{
-		  if (vSpeed < terminalVelocity)
+		  ball.hPos = hBoundary;
+		  if( Math.abs(ball.hSpeed) < 1 ) //If the ball is coming to a stop on the right wall
 		  {
-			  vSpeed+= acceleration;
+			  ball.hSpeed = 0;
 		  }
-		  vPos = vPos + vSpeed;
-
+		  else
+		  {
+		      ball.hSpeed = -1 * ball.hSpeed * 0.70;
+		  }
 	  }
-	  // if (vSpeed == 0)
-	  // {
-		  // console.log("vPos: " + vPos);
-	  // }
-	  // console.log("vSpeed: " + vSpeed);
+	  else if (ball.hPos + ball.hSpeed <= 0) //If we have hit the left wall
+	  {
+		  ball.hPos = 0;
+		  if( Math.abs(ball.hSpeed) < 1 ) //If the ball is coming to a stop on the left wall
+		  {
+			  ball.hSpeed = 0;
+		  }
+		  else
+		  {
+		      ball.hSpeed = -1 * ball.hSpeed * 0.70;
+		  }
+	  }
+	  else
+	  {
+		  ball.hPos = ball.hPos + ball.hSpeed;
+	  }
+	  if (ball.vPos + ball.vSpeed >= vBoundary) //if we have hit the bottom wall.
+	  {
+		  ball.vPos = vBoundary;
+		  if( Math.abs(ball.vSpeed) < 1 ) //if the ball is coming to a stop at the bottom
+		  {
+			  ball.vSpeed = 0;
+		  }
+		  else
+		  {
+			ball.vSpeed = -1 * ball.vSpeed * 0.70;
+		  }
+	  }
+	  else if (ball.vPos + ball.vSpeed <= 0)
+	  {
+		  ball.vPos = 0;
+		  ball.vSpeed = -1 * ball.vSpeed;
+	  }
+	  else{
+		  if (ball.vSpeed < terminalVelocity)
+		  {
+			  ball.vSpeed += acceleration;
+		  }
+		  ball.vPos = ball.vPos + ball.vSpeed;
+	  }
 
-
-	  //console.log(vSpeed);
-	  elem.style.top = vPos + 'px'; 
-      elem.style.left = hPos + 'px'; 
+	  console.log("hello");
+	  ball.elem.style.top = ball.vPos + 'px'; 
+      ball.elem.style.left = ball.hPos + 'px'; 
+  }
+  function printObject(ball)
+  {
+	  console.log("printObject: hPos:" + ball.hPos + " vPos:" + ball.vPos + " hSpeed:" + ball.hSpeed + " vSpeed:" + ball.vSpeed);
   }
 
 }
