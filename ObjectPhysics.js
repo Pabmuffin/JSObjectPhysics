@@ -6,6 +6,7 @@ physics = {
 		vBoundary:750,
 		terminalVelocity:40,
 		acceleration:1,
+		rollingResistanceFactor:0.99,
 		balls: [],
 	},
 	
@@ -40,6 +41,9 @@ physics = {
 			{
 				ball.hSpeed = -1 * ball.hSpeed * 0.70;
 			}
+
+			//Rolling resistance: Friction when the ball hits the right wall
+			ball.vSpeed = ball.vSpeed * physics.vars.rollingResistanceFactor;
 		}
 		else if (ball.hPos + ball.hSpeed <= 0) //If we have hit the left wall
 		{
@@ -52,12 +56,14 @@ physics = {
 			{
 				ball.hSpeed = -1 * ball.hSpeed * 0.70;
 			}
+
+			//Rolling resistance: Friction when the ball hits the left wall
+			ball.vSpeed = ball.vSpeed * physics.vars.rollingResistanceFactor;
 		}
 		else
 		{
 			ball.hPos = ball.hPos + ball.hSpeed;
 		}
-		
 		
 		if (ball.vPos + ball.vSpeed >= physics.vars.vBoundary) //if we have hit the bottom wall.
 		{
@@ -70,11 +76,17 @@ physics = {
 			{
 				ball.vSpeed = -1 * ball.vSpeed * 0.70;
 			}
+
+			//Rolling resistance: Friction when the ball hits the bottom wall.
+			ball.hSpeed = ball.hSpeed * physics.vars.rollingResistanceFactor;
 		}
-		else if (ball.vPos + ball.vSpeed <= 0)
+		else if (ball.vPos + ball.vSpeed <= 0) //if we have hit the top wall.
 		{
 			ball.vPos = 0;
 			ball.vSpeed = -1 * ball.vSpeed;
+
+			//Rolling resistance: Friction when the ball hits the top wall.
+			ball.hSpeed = ball.hSpeed * physics.vars.rollingResistanceFactor;
 		}
 		else{
 			if (ball.vSpeed < physics.vars.terminalVelocity)
@@ -90,5 +102,5 @@ physics = {
 }
 
 physics.addBall({hPos: 0, vPos: 1, hSpeed:30, vSpeed:1, elem:document.getElementById("ball1")});
-physics.addBall({hPos: 150, vPos: 1, hSpeed:20, vSpeed:5, elem:document.getElementById("ball2")});
+physics.addBall({hPos: 150, vPos: 1, hSpeed:0, vSpeed:5, elem:document.getElementById("ball2")});
 physics.addBall({hPos: 350, vPos: 1, hSpeed:10, vSpeed:10, elem:document.getElementById("ball3")});
