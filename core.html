@@ -4,8 +4,8 @@
 
 <style>
 #container {
-    width: 1000px;
-    height: 900px;
+    width: 800px;
+    height: 800px;
     position: relative;
     background: yellow;
 }
@@ -16,15 +16,33 @@
     background: blue;
 	border-radius: 50%;
 }
+#ball2 {
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    background: red;
+	border-radius: 50%;
+}
+#ball3 {
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    background: green;
+	border-radius: 50%;
+}
 </style>
 
 
 <p>
-<button onclick="myMove()">Click Me</button>
-</p> 
+<button onclick="physics.start()">Start</button>
+<button onclick="physics.stop()">Stop</button>
+</p>
+ 
 
 <div id ="container">
     <div id ="ball1"></div>
+    <div id ="ball2"></div>
+    <div id ="ball3"></div>
 </div>
 
 <script src="ObjectPhysics.js">
