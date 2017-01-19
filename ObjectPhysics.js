@@ -11,20 +11,29 @@ physics = {
 	},
 	
 	start:function(){
+		if(physics.vars.interval){
+			physics.reset();
+		}
 		physics.vars.interval = setInterval(physics.moveObjects, 10, physics.vars.balls);
 	},
 	
 	stop:function(){
 		clearInterval(physics.vars.interval);
+		physics.vars.interval = false;
+	},
+	iterate:function(){
+		physics.stop();
+		physics.moveObjects(physics.vars.balls);
 	},
 	
 	reset:function(){
 		physics.stop();
 		physics.vars.balls = [];
-		physics.addBall({h:{pos:260, speed:30, acc:0}, v:{pos:260, speed:100, acc:1}, elem:document.getElementById("blueb")});
-		physics.addBall({h:{pos:290, speed:100, acc:1}, v:{pos:290, speed:0, acc:0}, elem:document.getElementById("greenb")});
-		physics.addBall({h:{pos:260, speed:0, acc:0}, v:{pos:290, speed:-100, acc:-1}, elem:document.getElementById("redb")});
-		physics.addBall({h:{pos:290, speed:-100, acc:-1}, v:{pos:260, speed:10, acc:0}, elem:document.getElementById("orangeb")});
+		//physics.addBall({h:{pos:260, speed:30, acc:0}, v:{pos:260, speed:100, acc:1}, elem:document.getElementById("blueb")});
+		//physics.addBall({h:{pos:290, speed:100, acc:1}, v:{pos:290, speed:0, acc:0}, elem:document.getElementById("greenb")});
+		//physics.addBall({h:{pos:260, speed:0, acc:0}, v:{pos:290, speed:-100, acc:-1}, elem:document.getElementById("redb")});
+		//physics.addBall({h:{pos:290, speed:-100, acc:-1}, v:{pos:260, speed:10, acc:0}, elem:document.getElementById("orangeb")});
+		physics.addBall({h:{pos:290, speed:0, acc:0}, v:{pos:260, speed:0, acc:1}, elem:document.getElementById("orangeb")});
 	},
 	
 	moveObjects:function(objects){
@@ -34,6 +43,7 @@ physics = {
 	},
 
 	addBall:function(ball){
+		ball.isInSquishingState = false;
 		physics.vars.balls.push(ball);
 		physics.placeBall(ball);
 	},
@@ -44,15 +54,33 @@ physics = {
 	},
 	
 	advanceObject:function(ball){
-		physics.calculateAxis(ball.v, ball.h);
-		physics.calculateAxis(ball.h, ball.v);
+		if (ball.isInSquishingState)
+		{
+			iterateSquish(ball);
+		}
+		else
+		{
+			physics.calculateAxis(ball.v, ball.h);
+			physics.calculateAxis(ball.h, ball.v);
+		}
 		physics.placeBall(ball); 
 	},
-	
+	iterateSquish:function(ball){
+		if(ball.isCompressing) //iterate compression
+		{
+		//	ball.elem.style.width = 
+
+
+		}
+		else //iterate decompression
+		{
+
+		}
+	},
 	calculateAxis:function(axis, axis2){
-				
+
 		var nextPos = axis.pos + axis.speed;
-		
+
 		if (nextPos >= physics.vars.boundary) //If we have hit the right wall
 		{
 			axis.pos = physics.vars.boundary;
