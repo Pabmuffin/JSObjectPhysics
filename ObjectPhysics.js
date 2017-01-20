@@ -52,54 +52,65 @@ physics = {
 		ball.elem.style.top = ball.v.pos + 'px'; 
 		ball.elem.style.left = ball.h.pos + 'px';
 	},
-	
 	advanceObject:function(ball){
 		if (ball.isInSquishingState)
 		{
-			iterateSquish(ball);
+			physics.iterateSquish(ball);
 		}
 		else
 		{
-			physics.calculateAxis(ball.v, ball.h);
-			physics.calculateAxis(ball.h, ball.v);
+			physics.calculateAxis(ball.v, ball.h, ball);
+			physics.calculateAxis(ball.h, ball.v, ball);
 		}
 		physics.placeBall(ball); 
 	},
 	iterateSquish:function(ball){
 		if(ball.isCompressing) //iterate compression
 		{
-		//	ball.elem.style.width = 
-
-
+			if(ball.elem.style.width.slice(0, -2) < 75){
+				ball.elem.style.width = physics.incrementPxValue(ball.elem.style.width, 1);
+				ball.elem.style.height = physics.incrementPxValue(ball.elem.style.height, -1);
+			}
 		}
 		else //iterate decompression
 		{
+			if(ball.elem.style.width.slice(0, -2) > 50){
+				ball.elem.style.width = physics.incrementPxValue(ball.elem.style.width, -1);
+				ball.elem.style.height = physics.incrementPxValue(ball.elem.style.height, 1);
+			}
 
 		}
 	},
-	calculateAxis:function(axis, axis2){
+	incrementPxValue(orig, incrementBy){
+		return orig.slice(0, -2) + incrementBy;
+		
+		
+	},
+	calculateAxis:function(axis, axis2, ball){
 
 		var nextPos = axis.pos + axis.speed;
 
-		if (nextPos >= physics.vars.boundary) //If we have hit the right wall
+		if (nextPos >= physics.vars.boundary) //If we have hit the right/bottom wall
 		{
 			axis.pos = physics.vars.boundary;
-			if( Math.abs(axis.speed) < 1 ) //If the ball is coming to a stop on the right wall
-			{
-				axis.speed = 0;
-			}
-			else
-			{
-				axis.speed = -1 * axis.speed * physics.vars.bounceFactor;
-			}
+			// if( Math.abs(axis.speed) < 1 ) //If the ball is coming to a stop on the right/bottom wall
+			// {
+				// axis.speed = 0;
+			// }
+			// else
+			// {
+				// axis.speed = -1 * axis.speed * physics.vars.bounceFactor;
+			// }
+			ball.isInSquishingState = true;
+			ball.isCompressing = true;
 
-			//Rolling resistance: Friction when the ball hits the right wall
+			//Rolling resistance: Friction when the ball hits the right/bottom wall
 			axis2.speed = axis2.speed * physics.vars.rollingResistanceFactor;
 		}
-		else if (nextPos <= 0) //If we have hit the left wall
+		else if (nextPos <= 0) //If we have hit the left/upper wall
 		{
 			axis.pos = 0;
-			if( Math.abs(axis.speed) < 1 ) //If the ball is coming to a stop on the left wall
+			if( Math.abs(axis.speed) < 1 ) //If the ball is coming to a stop on the left/upper wall
 			{
 				axis.speed = 0;
 			}
@@ -108,7 +119,7 @@ physics = {
 				axis.speed = -1 * axis.speed * physics.vars.bounceFactor;
 			}
 
-			//Rolling resistance: Friction when the ball hits the left wall
+			//Rolling resistance: Friction when the ball hits the left/upper wall
 			axis2.speed = axis2.speed * physics.vars.rollingResistanceFactor;
 		}
 		else
