@@ -33,7 +33,7 @@ physics = {
 		//physics.addBall({h:{pos:290, speed:100, acc:1}, v:{pos:290, speed:0, acc:0}, elem:document.getElementById("greenb")});
 		//physics.addBall({h:{pos:260, speed:0, acc:0}, v:{pos:290, speed:-100, acc:-1}, elem:document.getElementById("redb")});
 		//physics.addBall({h:{pos:290, speed:-100, acc:-1}, v:{pos:260, speed:10, acc:0}, elem:document.getElementById("orangeb")});
-		physics.addBall({h:{pos:290, speed:0, acc:0}, v:{pos:260, speed:0, acc:1}, elem:document.getElementById("orangeb")});
+		physics.addBall({h:{pos:290, speed:0, acc:0, width:50}, v:{pos:260, speed:0, acc:1, height:50}, elem:document.getElementById("orangeb")});
 	},
 	
 	moveObjects:function(objects){
@@ -51,14 +51,18 @@ physics = {
 	placeBall:function(ball){
 		ball.elem.style.top = ball.v.pos + 'px'; 
 		ball.elem.style.left = ball.h.pos + 'px';
+		ball.elem.style.width = ball.h.width + 'px';
+		ball.elem.style.height = ball.v.height + 'px';
 	},
 	advanceObject:function(ball){
 		if (ball.isInSquishingState)
 		{
+			console.log("isInSquishingState");
 			physics.iterateSquish(ball);
 		}
 		else
 		{
+			console.log("!isInSquishingState");
 			physics.calculateAxis(ball.v, ball.h, ball);
 			physics.calculateAxis(ball.h, ball.v, ball);
 		}
@@ -67,18 +71,34 @@ physics = {
 	iterateSquish:function(ball){
 		if(ball.isCompressing) //iterate compression
 		{
-			if(ball.elem.style.width.slice(0, -2) < 75){
-				ball.elem.style.width = physics.incrementPxValue(ball.elem.style.width, 1);
-				ball.elem.style.height = physics.incrementPxValue(ball.elem.style.height, -1);
+			if(ball.h.width < 75)
+			{
+				ball.h.width++;
+				ball.v.height--;
+				ball.v.pos++;
+				ball.h.pos-=1;
+			}
+			else //done compressing, switch to decompressing.
+			{
+				ball.isCompressing = false;
+				console.log("Done compressing, Switching to decompressing");
 			}
 		}
-		else //iterate decompression
+		//if(!ball.isCompressing) //iterate decompression
+		else
 		{
-			if(ball.elem.style.width.slice(0, -2) > 50){
-				ball.elem.style.width = physics.incrementPxValue(ball.elem.style.width, -1);
-				ball.elem.style.height = physics.incrementPxValue(ball.elem.style.height, 1);
+			if(ball.h.width > 50)
+			{
+				ball.h.width--;
+				ball.v.height++;
+				ball.v.pos--;
+				ball.h.pos+=1;
 			}
-
+			else //done decompressing, get out of squishing state
+			{
+				ball.isInSquishingState = false;
+				console.log("Done decompressing, Switching out of squishing state");
+			}
 		}
 	},
 	incrementPxValue(orig, incrementBy){
