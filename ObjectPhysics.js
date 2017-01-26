@@ -33,7 +33,7 @@ physics = {
 		//physics.addBall({h:{pos:290, speed:100, acc:1}, v:{pos:290, speed:0, acc:0}, elem:document.getElementById("greenb")});
 		//physics.addBall({h:{pos:260, speed:0, acc:0}, v:{pos:290, speed:-100, acc:-1}, elem:document.getElementById("redb")});
 		//physics.addBall({h:{pos:290, speed:-100, acc:-1}, v:{pos:260, speed:10, acc:0}, elem:document.getElementById("orangeb")});
-		physics.addBall({h:{pos:290, speed:0, acc:0, width:50}, v:{pos:260, speed:0, acc:1, height:50}, elem:document.getElementById("orangeb")});
+		physics.addBall({h:{pos:290, speed:0, acc:0, width:50}, v:{pos:260, speed:0, acc:1, height:50}, compressionRate:0, elem:document.getElementById("orangeb")});
 	},
 	
 	moveObjects:function(objects){
@@ -47,7 +47,18 @@ physics = {
 		physics.vars.balls.push(ball);
 		physics.placeBall(ball);
 	},
-	
+	printBall:function(ball){
+		console.log("h.pos: " + ball.h.pos);
+		console.log("h.speed: " + ball.h.speed);
+		console.log("h.acc: " + ball.h.acc);
+		console.log("h.width: " + ball.h.width);
+		console.log("v.pos: " + ball.v.pos);
+		console.log("v.speed: " + ball.v.speed);
+		console.log("v.acc: " + ball.v.acc);
+		console.log("v.height: " + ball.v.height);
+		console.log("compressionRate: " + ball.compressionRate);
+		console.log("");
+	},
 	placeBall:function(ball){
 		ball.elem.style.top = ball.v.pos + 'px'; 
 		ball.elem.style.left = ball.h.pos + 'px';
@@ -71,12 +82,22 @@ physics = {
 	iterateSquish:function(ball){
 		if(ball.isCompressing) //iterate compression
 		{
+			physics.printBall(ball);
 			if(ball.h.width < 75)
 			{
-				ball.h.width++;
-				ball.v.height--;
-				ball.v.pos++;
-				ball.h.pos-=1;
+				ball.h.width += ball.compressionRate;
+				ball.v.height -= ball.compressionRate;
+				ball.v.pos += ball.compressionRate;
+				ball.h.pos-= (ball.compressionRate / 2);
+
+				if (ball.compressionRate < 1)
+				{
+					ball.compressionRate = 1;
+				}
+				else
+				{
+					ball.compressionRate = ball.compressionRate / 2;
+				}
 			}
 			else //done compressing, switch to decompressing.
 			{
@@ -87,12 +108,22 @@ physics = {
 		//if(!ball.isCompressing) //iterate decompression
 		else
 		{
+			physics.printBall(ball);
 			if(ball.h.width > 50)
 			{
-				ball.h.width--;
-				ball.v.height++;
-				ball.v.pos--;
-				ball.h.pos+=1;
+				ball.h.width -= ball.compressionRate;
+				ball.v.height += ball.compressionRate;
+				ball.v.pos += ball.compressionRate;
+				ball.h.pos+= (ball.compressionRate * 2);
+
+				if (ball.compressionRate >= (ball.v.speed / 2))
+				{
+					ball.compressionRate = (ball.v.speed / 2);
+				}
+				else
+				{
+					ball.compressionRate = ball.compressionRate * 2;
+				}
 			}
 			else //done decompressing, get out of squishing state
 			{
@@ -100,11 +131,6 @@ physics = {
 				console.log("Done decompressing, Switching out of squishing state");
 			}
 		}
-	},
-	incrementPxValue(orig, incrementBy){
-		return orig.slice(0, -2) + incrementBy;
-		
-		
 	},
 	calculateAxis:function(axis, axis2, ball){
 
@@ -123,6 +149,7 @@ physics = {
 			// }
 			ball.isInSquishingState = true;
 			ball.isCompressing = true;
+			ball.compressionRate = ball.v.speed / 2; //ball begins compression at its rate of speed.
 
 			//Rolling resistance: Friction when the ball hits the right/bottom wall
 			axis2.speed = axis2.speed * physics.vars.rollingResistanceFactor;
