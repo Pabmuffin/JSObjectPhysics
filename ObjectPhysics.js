@@ -10,8 +10,13 @@ physics = {
 		balls: [],
 	},
 	
+	init:function(){
+		physics.reset();
+		document.onkeydown = physics.keys;
+	},
+	
 	start:function(){
-		physics.vars.interval = setInterval(physics.moveObjects, 10, physics.vars.balls);
+		physics.vars.interval = setInterval(physics.moveObjects, 30, physics.vars.balls);
 	},
 	
 	stop:function(){
@@ -25,6 +30,52 @@ physics = {
 		physics.addBall({h:{pos:290, speed:100, acc:1}, v:{pos:290, speed:0, acc:0}, elem:document.getElementById("greenb")});
 		physics.addBall({h:{pos:260, speed:0, acc:0}, v:{pos:290, speed:-100, acc:-1}, elem:document.getElementById("redb")});
 		physics.addBall({h:{pos:290, speed:-100, acc:-1}, v:{pos:260, speed:10, acc:0}, elem:document.getElementById("orangeb")});
+	},
+	
+	shiftGravity:function(direction){
+		
+		vAcc = 0;
+		hAcc = 0;
+		
+		switch(direction){
+			case "up":
+				vAcc = -1;
+				break;
+			case "down":
+				vAcc = 1;
+				break;			
+			case "left":
+				hAcc = -1;
+				break;
+			case "right":
+				hAcc = 1;
+				break;
+			default: 
+		}
+		
+		for(i = 0; i<physics.vars.balls.length; i++){
+			physics.vars.balls[i].h.acc = hAcc;
+			physics.vars.balls[i].v.acc = vAcc;
+		}
+		
+	},
+	
+	keys:function(e){
+		e = e || window.event;
+
+    	if (e.keyCode == '38') {
+        	physics.shiftGravity('up');
+    	}
+    	else if (e.keyCode == '40') {
+			physics.shiftGravity('down');
+    	}
+    	else if (e.keyCode == '37') {
+			physics.shiftGravity('left');
+    	}
+    	else if (e.keyCode == '39') {
+			physics.shiftGravity('right');
+    	}
+
 	},
 	
 	moveObjects:function(objects){
@@ -50,13 +101,18 @@ physics = {
 	},
 	
 	calculateAxis:function(axis, axis2){
+	
+		if (axis.speed < physics.vars.terminalVelocity)
+		{
+			axis.speed += axis.acc;
+		}
 				
 		var nextPos = axis.pos + axis.speed;
 		
-		if (nextPos >= physics.vars.boundary) //If we have hit the right wall
+		if (nextPos >= physics.vars.boundary)
 		{
 			axis.pos = physics.vars.boundary;
-			if( Math.abs(axis.speed) < 1 ) //If the ball is coming to a stop on the right wall
+			if( Math.abs(axis.speed) < 1 )
 			{
 				axis.speed = 0;
 			}
@@ -65,13 +121,12 @@ physics = {
 				axis.speed = -1 * axis.speed * physics.vars.bounceFactor;
 			}
 
-			//Rolling resistance: Friction when the ball hits the right wall
 			axis2.speed = axis2.speed * physics.vars.rollingResistanceFactor;
 		}
-		else if (nextPos <= 0) //If we have hit the left wall
+		else if (nextPos <= 0)
 		{
 			axis.pos = 0;
-			if( Math.abs(axis.speed) < 1 ) //If the ball is coming to a stop on the left wall
+			if( Math.abs(axis.speed) < 1 )
 			{
 				axis.speed = 0;
 			}
@@ -80,18 +135,15 @@ physics = {
 				axis.speed = -1 * axis.speed * physics.vars.bounceFactor;
 			}
 
-			//Rolling resistance: Friction when the ball hits the left wall
 			axis2.speed = axis2.speed * physics.vars.rollingResistanceFactor;
 		}
 		else
 		{
-			if (axis.speed < physics.vars.terminalVelocity)
-			{
-				axis.speed += axis.acc;
-			}
-			axis.pos = axis.pos + axis.speed;
+			axis.pos = nextPos;
 		}
+
+		
 	},
 }
 
-physics.reset();
+physics.init();
