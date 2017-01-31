@@ -113,8 +113,8 @@ physics = {
 			{
 				ball.h.width -= ball.compressionRate;
 				ball.v.height += ball.compressionRate;
-				ball.v.pos += ball.compressionRate;
-				ball.h.pos+= (ball.compressionRate * 2);
+				ball.v.pos -= ball.compressionRate;
+				ball.h.pos += (ball.compressionRate / 2);
 
 				if (ball.compressionRate >= (ball.v.speed / 2))
 				{
@@ -122,7 +122,7 @@ physics = {
 				}
 				else
 				{
-					ball.compressionRate = ball.compressionRate * 2;
+					ball.compressionRate *= 2;
 				}
 			}
 			else //done decompressing, get out of squishing state
