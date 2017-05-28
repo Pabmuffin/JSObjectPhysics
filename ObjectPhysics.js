@@ -5,7 +5,7 @@ physics = {
 		boundary:550,
 		terminalVelocity:40,
 		acceleration:1,
-		rollingResistanceFactor:0.99,
+		rollingResistanceFactor:0.97,
 		bounceFactor:0.70,
 		balls: [],
 	},
