@@ -16,10 +16,14 @@ physics = {
 	},
 	
 	start:function(){
+		document.getElementById("startButton").disabled = true;
+		document.getElementById("stopButton").disabled = false;
 		physics.vars.interval = setInterval(physics.moveObjects, 30, physics.vars.balls);
 	},
 	
 	stop:function(){
+		document.getElementById("startButton").disabled = false;
+		document.getElementById("stopButton").disabled = true;
 		clearInterval(physics.vars.interval);
 	},
 	
@@ -67,13 +71,13 @@ physics = {
         	physics.shiftGravity('up');
     	}
     	else if (e.keyCode == '40') {
-			physics.shiftGravity('down');
+		physics.shiftGravity('down');
     	}
     	else if (e.keyCode == '37') {
-			physics.shiftGravity('left');
+		physics.shiftGravity('left');
     	}
     	else if (e.keyCode == '39') {
-			physics.shiftGravity('right');
+		physics.shiftGravity('right');
     	}
 
 	},
@@ -142,7 +146,6 @@ physics = {
 			axis.pos = nextPos;
 		}
 
-		
 	},
 }
 
